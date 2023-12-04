@@ -53,6 +53,13 @@ O código está organizado em duas funções principais: `MENU` e `MENUCAD`.
 - **`fExclCod(cCod)`**
   - Objetivo: Excluir um produto do estoque com base no código.
 
+
+![image](https://github.com/CaioSantos-23/Projeto-estoque-em-advpl/assets/125384477/1e53163b-19c9-4598-b491-c80fd5b3588b)
+
+![image](https://github.com/CaioSantos-23/Projeto-estoque-em-advpl/assets/125384477/2ec18ee7-1d46-4fa5-9b4c-42d7d241173d)
+
+
+
 ### Observações Importantes
 
 - **Interface Gráfica:** Utiliza objetos gráficos da biblioteca MSDialog para criar interfaces de usuário.
