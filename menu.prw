@@ -4,67 +4,69 @@
 #INCLUDE 'COLORS.CH'
 
 
-
-
-// FunÁ„o principal que cria a interface gr·fica
+// Fun√ß√£o principal que cria a interface gr√°fica
 User Function MENU()
-   // DeclaraÁ„o de vari·veis para armazenar informaÁıes do formul·rio
-   Local cCod := space(6) // e  o input para incluir o cÛdigo do produto
-   Local cQuantAT := SPACE(20) // e o input para incluir a quantidade
+   // Declara√ß√£o de vari√°veis para armazenar informa√ß√µes do formul√°rio
+   Local cCod := SPACE( 6 ) // e  o input para incluir o c√≥digo do produto
+   Local nQuantAT  := SPACE( 6 )// e o input para incluir a quantidade
 
-   // Definindo vari·veis privadas para manipular objetos de tela
+   // Definindo vari√°veis privadas para manipular objetos de tela
    SetPrvt("oDlg1","oCod","oQuantAT", "oSalvar", "oVerific", "oVerifMin", "oCad", "oDelete")
 
    // TELA PRINCIPAL
    oDlg1 := MSDialog():New(094,225,500,400,"Controle de Estoque",,,.F.,,,,,,.T.,,,.T.)
 
    // NOME DOS CAMPOS
-  oCod  := TSay():New(012,016,{||"CÛdigo do Produto"},oDlg1,,,.F.,.F.,.F.,.T.,CLR_BLACK,CLR_WHITE,060,008)
+  oCod  := TSay():New(012,016,{||"C√≥digo do Produto"},oDlg1,,,.F.,.F.,.F.,.T.,CLR_BLACK,CLR_WHITE,060,008)
   oQuantAT := TSay():New(032,016,{||"Quantidade Atual"},oDlg1,,,.F.,.F.,.F.,.T.,CLR_BLACK,CLR_WHITE,050,008)
 
-   // GETS PARA RECEP«√O DE VALORES
+   // GETS PARA RECEP√á√ÉO DE VALORES
    oCod  := TGet():New(012,76,{|u| If(PCount()>0,cCod:=u,cCod)},oDlg1,060,010,'',,CLR_BLACK,CLR_WHITE,,,,.T.,"",,,.F.,.F.,,.F.,.F.,"","cCod",,)
-   oQuantAT := TGet():New(032,76,{|u| If(PCount()>0,cQuantAT:=u,cQuantAT)},oDlg1,060,010,'',,CLR_BLACK,CLR_WHITE,,,,.T.,"",,,.F.,.F.,,.F.,.F.,"","cQuantAT",,)
+   oQuantAT := TGet():New(032,76,{|u| If(PCount()>0,nQuantAT:=u,nQuantAT)},oDlg1,060,010,'',,CLR_BLACK,CLR_WHITE,,,,.T.,"",,,.F.,.F.,,.F.,.F.,"","cQuantAT",,)
 
 
-   // BOT’ES DE INTERA«√O
-   oSalvar := TButton():New(080,016,"Salvar",oDlg1,{|u| fInclui(cCod,cQuantAT),cCod := Space(6),cQuantAT := Space(20) },037,012,,,,.T.,,"",,,,.F.)
+   // BOT√ïES DE INTERA√á√ÉO
+   oSalvar := TButton():New(080,016,"Salvar",oDlg1,{|u| fInclui(cCod,nQuantAT)},037,012,,,,.T.,,"",,,,.F.)
    oVerific := TButton():New(100,016,"Verificar estoque",oDlg1,{|u| fVerifEs(cCod)},048,012,,,,.T.,,"",,,,.F.)
    oVerifMin := TButton():New(120,016,"Verificar estoque minimo",oDlg1,{|u| fverifMin(cCod)},065,012,,,,.T.,,"",,,,.F.)
    oCad := TButton():New(140,016,"Cadastrar Produto",oDlg1,{|u| fcad()},053,012,,,,.T.,,"",,,,.F.)
    oDelete := TButton():New(160,016,"Excluir", oDlg1, {|u| fExclCod(cCod)}, 037,012,,,,.T.,,"",,,,.F.)
    
-   // AtivaÁ„o da tela principal
+   // Ativa√ß√£o da tela principal
    oDlg1:Activate(,,,.T.)
 
 Return
-
-// FunÁ„o para incluir dados
-Static Function fInclui(cCod, cQuantAT)
-   Local nQuantidade := Val(cQuantAT) // estou convertendo cQuanat em um valor n˙merico
-
-   // Verificando se  o usuario deseja subtrair
-   if SubStr(cQuantAT, 1, 1) == "-"
-      nQuantidade := -nQuantidade
-   endif 
+ 
+// Fun√ß√£o para incluir dados
+Static Function fInclui(cCod, nQuantAT) //OK
+   Local nQuantidade := Val(nQuantAT) // Convertendo nQuantAT em um valor num√©rico
 
    // Atualiza o estoque
-   dbSelectArea("ES2") // Estou selecionando a tabela ES1
+   DbSelectArea("ES2")
+   ES2->(DbSetOrder(1))
 
-   if !ES2->(DbSeek(cCod)) // Se o cÛdigo n„o existir, mostra uma mensagem
-      MsgInfo("Produto n„o encontrado.")
+   if !ES2->(DbSeek(xFilial("ES2") + cCod))
+      MsgInfo("Produto n√£o encontrado.")
    else
-      // Atualiza a quantidade no estoque
-      RecLock("ES2", .F.)  
-      ES2->ES2_QUANTA := ES2->ES2_QUANTA + nQuantidade
-      MsUnlock()
-
-      MsgInfo("Estoque Atualizado com sucesso.")
+      // Verificando se o usu√°rio deseja subtrair
+      if nQuantidade < 0
+         // L√≥gica para subtrair a quantidade
+         RecLock("ES2", .F.)
+         ES2->ES2_QUANTA := ES2->ES2_QUANTA + nQuantidade
+         MsUnlock()
+         MsgInfo("Estoque subtra√≠do com sucesso.")
+      else
+         // L√≥gica para adicionar a quantidade
+         RecLock("ES2", .F.)  
+         ES2->ES2_QUANTA := ES2->ES2_QUANTA + nQuantidade
+         MsUnlock()
+         MsgInfo("Estoque atualizado com sucesso.")
+      endif
    endif
 
 Return
 
-// FunÁ„o para verificar estoque
+// Fun√ß√£o para verificar estoque
 Static Function fVerifEs(cCod) // OK
   
       //Selecionando a tabela 
@@ -72,74 +74,61 @@ Static Function fVerifEs(cCod) // OK
       ES2->(DbSetOrder(1))
       ES2->(DbGoTop())
       
-      // Verifique se o registro com o cÛdigo do produto existe
+      // Verifique se o registro com o c√≥digo do produto existe
       if ES2->(DbSeek(xFilial("ES2")+cCod))
          MsgInfo("CODIGO ->" + ES2->ES2_COD + ;
-                  " DescriÁ„o ->" + ES2->ES2_DESC + ;
-                  " Quantidade Atual ->" + ES2->ES2_QUANTA + ;
-                  " Quantidade mÌnima ->" + ES2->ES2_QUANTM)
+                  " Descri√ß√£o ->" + ES2->ES2_DESC + ;
+                  " Quantidade Atual ->" + Alltrim(Str(ES2->ES2_QUANTA)) + ;
+                  " Quantidade m√≠nima ->" + Alltrim(Str(ES2->ES2_QUANTM)))
       else
-         MsgInfo("Registro com o cÛdigo " + cCod + " n„o encontrado.")
+         MsgInfo("Registro com o c√≥digo " + cCod + " n√£o encontrado.")
       endif
 
-   // POSICIONA NO PRIMEIRO REGISTRO
-   //if !ES2->(DbGoTop())
-     // Alert("N√O H¡ DADOS PARA EXIBIR!","ATEN«√O!")
-  
-   //else
-      //do while !ES2->(EOF())
-         
-         // Move para o prÛximo registro
-        // ES2->(DbSkip())
-     // enddo
-
-   //endif
 
 Return
 
-// FunÁ„o para mostrar todos os dados que est„o abaixo do estoque minimo
+// Fun√ß√£o para mostrar todos os dados que est√£o abaixo do estoque minimo
 Static Function fverifMin(cCod) //OK
    
    dbSelectArea("ES2")
    If ES2->(dbseek(xFilial("ES2")+cCod))
 
-   if Val(ES2->ES2_QUANTA) < Val(ES2->ES2_QUANTM)
-         MsgInfo("Estes produtos est„o abaixo da quantidade mÌnima:" + ;
-                  "CÛdigo: " + ES2->ES2_COD + ;
-                  "DescriÁ„o: " + ES2->ES2_DESC + ;
-                  "Quantidade Atual: " + ES2->ES2_QUANTA + ;
-                  "Quantidade MÌnima: " + es2->ES2_QUANTM)
+   if (ES2->ES2_QUANTA) < (ES2->ES2_QUANTM)
+         MsgInfo("Estes produtos est√£o abaixo da quantidade m√≠nima: " + ;
+                  "C√≥digo: " + ES2->ES2_COD + ;
+                  "Descri√ß√£o: " + ES2->ES2_DESC + ;
+                  "Quantidade Atual: " + Alltrim(Str(ES2->ES2_QUANTA)) + ;
+                  "Quantidade M√≠nima: " + Alltrim(Str(ES2->ES2_QUANTM)))
    else
-      MsgInfo("N„o h· produto Abaixo do estoque minimo")
+      MsgInfo("N√£o h√° produto Abaixo do estoque minimo")
+   
    endif
-      MsgInfo("N„o h· produtos cadastrados")
+     
       
-   //else
-      //alert('nao encontrei')
    EndIF
 Return
 
-// FunÁ„o para cadastrar um produto novo
+// Fun√ß√£o para cadastrar um produto novo
 Static Function fcad()  //OK
 
    U_MENUCAD()
 
 Return
 
-// FunÁ„o para excluir um registro com base no cÛdigo do produto
-Static Function fExclCod(cCod)
+// Fun√ß√£o para excluir um registro com base no c√≥digo do produto
+Static Function fExclCod(cCod)  // OK
    
    
    dbSelectArea("ES2")
 
-      // Verifique se o registro com o cÛdigo do produto existe
+      // Verifique se o registro com o c√≥digo do produto existe
       if ES2->(dbSeek(xFilial('ES2')+cCod))
          RecLock("ES2", .F.)
             ES2->(DbDelete())
          ES2->(MsUnlock())
-         MsgInfo("Registro com o cÛdigo " + cCod + " foi excluÌdo.")
+         MsgInfo("Registro com o c√≥digo " + cCod + " foi exclu√≠do.")
       else
-         MsgInfo("Registro com o cÛdigo " + cCod + " n„o encontrado.")
+         MsgInfo("Registro com o c√≥digo " + cCod + " n√£o encontrado.")
       endif
    
    
