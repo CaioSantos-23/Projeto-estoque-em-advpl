@@ -1,49 +1,72 @@
 
+# Controle de Estoque em Protheus
 
-Este documento fornece uma descrição e uma breve documentação do código ADVPL que implementa um sistema de controle de estoque.
+Este projeto consiste em um sistema de controle de estoque desenvolvido em Protheus, uma linguagem de programação específica para o ERP TOTVS Protheus. O sistema oferece funcionalidades para o cadastro, atualização, verificação e exclusão de produtos no estoque.
 
-### Visão Geral
+### Estrutura do Projeto
 
-O código ADVPL fornecido é destinado a criar uma interface de usuário para o controle de estoque. Ele inclui funções para cadastrar, excluir e alterar produtos, bem como para verificar e atualizar as quantidades de estoque. O código utiliza a linguagem de programação ADVPL comumente usada no sistema Protheus.
+O código está organizado em duas funções principais: `MENU` e `MENUCAD`. 
 
-### Estrutura do Código
+#### 1. **`MENU`**
 
-O código é organizado em funções, cada uma com uma finalidade específica:
+- **Objetivo:** Controlar o estoque, permitindo a inclusão, verificação e exclusão de produtos.
 
-1. **USER FUNCTION MODELUM()**
-   - Cria uma interface de usuário para o controle de estoque.
-   - Define variáveis para uma tabela de produtos, título e funções de exclusão, alteração, cadastro e verificação de estoque.
-   
-2. **USER FUNCTION MODELUMA()**
-   - Função para excluir um registro de produto.
-   - Exibe uma mensagem de confirmação para garantir a exclusão.
-   
-3. **USER FUNCTION MODELUMB()**
-   - Função para alterar um registro de produto.
-   - Exibe uma mensagem de confirmação e determina se a ação é uma inclusão ou uma alteração.
-   
-4. **USER FUNCTION MODELUMC()**
-   - Função para cadastrar um novo produto.
-   - Exibe uma mensagem de confirmação e permite a entrada de detalhes do novo produto.
-   
-5. **USER FUNCTION MODELUMQUANT()**
-   - Função para verificar e atualizar as quantidades de estoque.
-   - Exibe uma mensagem de confirmação e permite a entrada da quantidade a ser adicionada ou subtraída, bem como da quantidade mínima.
-   
-6. **USER FUNCTION U_MODELUMin()**
-   - Função que parece estar vazia e não tem uma finalidade clara no código fornecido.
+- **Funcionalidades:**
+  - **Inclusão de Produtos:** Atualiza a quantidade em estoque.
+  - **Verificação de Estoque:** Exibe informações do produto com base no código.
+  - **Verificação de Estoque Mínimo:** Lista produtos abaixo da quantidade mínima.
+  - **Cadastro de Produto:** Redireciona para a tela de cadastro (`U_MENUCAD`).
+  - **Exclusão de Produto:** Remove um produto com base no código.
+
+#### 2. **`MENUCAD`**
+
+- **Objetivo:** Cadastrar novos produtos no estoque.
+
+- **Campos:**
+  - Código do Produto
+  - Quantidade Atual
+  - Descrição
+  - Quantidade Mínima
+  - Unidade de Medida
+  - Armazém
+
+- **Operações:**
+  - **Salvar:** Executa a função `fsalvar` para salvar os dados no banco de dados.
+
+### Funções Estáticas
+
+- **`fsalvar(cCod, cQuantAT, cDesc, cQuantMIN, cUNID, cARMAZ)`**
+  - Objetivo: Salvar dados do novo produto no banco de dados.
+
+- **`fInclui(cCod, cQuantAT)`**
+  - Objetivo: Atualizar a quantidade em estoque com base no código do produto.
+
+- **`fVerifEs(cCod)`**
+  - Objetivo: Verificar o estoque atual de um produto com base no código.
+
+- **`fverifMin(cCod)`**
+  - Objetivo: Verificar produtos abaixo da quantidade mínima.
+
+- **`fcad()`**
+  - Objetivo: Redirecionar para a tela de cadastro (`U_MENUCAD`).
+
+- **`fExclCod(cCod)`**
+  - Objetivo: Excluir um produto do estoque com base no código.
 
 ### Observações Importantes
 
-1. Variáveis como `cAlias`, `cTitulo`, `cFunExc`, `cFunAlt` etc., devem ser definidas em outras partes do código ou devem ser adaptadas às necessidades do seu sistema.
-2. O código faz uso da função `MsgBox` para exibir mensagens de confirmação. Verifique se as mensagens estão adequadas às necessidades do usuário.
-3. O código inclui comentários que fornecem informações sobre possíveis ajustes necessários, como a lógica para consulta e atualização de banco de dados.
-4. Além das funções fornecidas, você deve criar a estrutura da tabela de produtos, definir campos relevantes e ajustar a lógica de acordo com a estrutura do banco de dados.
+- **Interface Gráfica:** Utiliza objetos gráficos da biblioteca MSDialog para criar interfaces de usuário.
 
-### Uso
+- **Validação de Campos:** Garante a integridade dos dados com validações para campos vazios no momento do cadastro.
 
-Para utilizar o código, é necessário integrá-lo ao sistema Protheus e personalizá-lo conforme as necessidades do seu projeto. Certifique-se de definir as variáveis relevantes e adaptar a lógica de acordo com sua estrutura de banco de dados e requisitos específicos.
+### Melhorias Futuras
 
-### Conclusão
+- **Tratamento de Erros:** Implementar tratamento mais robusto de erros.
 
-Este documento fornece uma visão geral do código ADVPL para controle de estoque, suas funções e algumas considerações importantes. Para uma implementação completa, é necessário personalizar o código e adaptá-lo ao seu ambiente específico. Certifique-se de testar o código em um ambiente seguro antes de implantá-lo em um ambiente de produção.
+- **Interface Gráfica:** Aprimorar a interface para proporcionar melhor experiência do usuário.
+
+- **Segurança:** Avaliar implementação de medidas de segurança para proteção dos dados.
+
+- **Refatoração:** Avaliar oportunidades de refatoração para otimização e simplificação do código.
+
+Este redmi fornece uma visão geral do projeto, destacando suas funcionalidades, estrutura e possíveis melhorias futuras.
